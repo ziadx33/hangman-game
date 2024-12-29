@@ -1,0 +1,221 @@
+@use "vars/colors" as *;
+@use "vars/sizes" as *;
+@use "mixins/shapes" as *;
+
+* {
+	box-sizing: border-box;
+}
+body {
+	font-family: Tahoma, Arial;
+	user-select: none;
+}
+.container {
+	margin: 20px auto;
+	width: 1000px;
+}
+.row {
+	display: flex;
+}
+hr {
+	border: 1px solid #eee;
+}
+.game-info {
+	display: flex;
+	.game-name {
+		flex: 1;
+	}
+	.category {
+		flex: 1;
+		text-align: right;
+		span {
+			text-transform: capitalize;
+			color: #e91363;
+			font-weight: bold;
+		}
+	}
+}
+
+$all: "draw" 1, "stand" 2, "hang" 3, "rope" 4, "man .head" 5, "man .body" 6,
+	"man .hands" 7, "man .legs" 8;
+.hangman-draw {
+	flex: 1;
+	background-color: #f8f8f8;
+	padding: 20px;
+	height: 324px;
+	.draw {
+		left: -60px;
+		width: 60px;
+		height: 280px;
+		border-bottom: $size-4 solid $c-222;
+		position: relative;
+		margin: auto;
+		display: none;
+	}
+
+	@each $part, $wrong in $all {
+		&.wrong-#{$wrong} .#{$part} {
+			display: block;
+		}
+	}
+	.stand {
+		display: none;
+	}
+	.stand::before {
+		content: "";
+		position: absolute;
+		background-color: $c-222;
+		width: $size-4;
+		height: 100%;
+		left: 50%;
+		margin-left: -2px;
+	}
+	.hang {
+		display: none;
+		&::before {
+			@extend .stand;
+			height: 4px;
+			width: 100px;
+			left: 30px;
+			top: 15px;
+		}
+		&::after {
+			@extend ::before;
+			width: 4px;
+			height: 30px;
+			left: 130px;
+			top: 15px;
+		}
+	}
+	.rope {
+		@include circle(70px);
+		position: absolute;
+		left: 95px;
+		top: 45px;
+		border: $size-4 dashed $c-222;
+		display: none;
+	}
+	.man {
+		.head {
+			@include circle(50px);
+			position: absolute;
+			border: $size-4 solid $c-222;
+			left: 105px;
+			top: 55px;
+			display: none;
+		}
+		.body {
+			position: absolute;
+			background-color: $c-222;
+			width: 4px;
+			height: 110px;
+			top: 102px;
+			left: 130px;
+			display: none;
+		}
+		.hands,
+		.legs {
+			&::before,
+			&::after {
+				content: "";
+				width: 50px;
+				position: absolute;
+				height: $size-4;
+				background-color: $c-222;
+				left: 85px;
+				top: 150px;
+				transform: rotate(30deg);
+			}
+			display: none;
+		}
+		.hands {
+			&::after {
+				left: 130px;
+				transform: rotate(-30deg);
+			}
+		}
+		.legs {
+			&::before {
+				top: 220px;
+				transform: rotate(-30deg);
+			}
+			&::after {
+				@extend ::before;
+				left: 130px;
+				transform: rotate(30deg);
+			}
+		}
+	}
+}
+
+.letters {
+	flex: 1;
+	padding: 20px;
+	text-align: center;
+	.letter-box {
+		@include square(55px);
+		display: inline-block;
+		background-color: #009688;
+		color: white;
+		font-size: 24px;
+		margin: {
+			right: 10px;
+			bottom: 12px;
+		}
+		line-height: 55px;
+		text-transform: uppercase;
+		font-weight: bold;
+		cursor: pointer;
+		&.clicked {
+			background-color: $c-222;
+			opacity: 0.2;
+			pointer-events: none;
+		}
+	}
+	&.finished {
+		pointer-events: none;
+	}
+}
+
+.letters-guess {
+	margin: 10px auto;
+	background-color: #f9f9f9;
+	padding: 20px;
+	display: flex;
+	justify-content: center;
+	min-height: 104px;
+	span {
+		@include square(60px);
+		font: {
+			size: 24px;
+			weight: bold;
+		}
+		margin-right: 10px;
+		text-align: center;
+		line-height: 60px;
+		text-transform: uppercase;
+		background-color: #fdfdfd;
+		border-bottom: 3px solid $c-222;
+		&.space {
+			background-color: none;
+			border-bottom: none;
+			position: relative;
+			&::before {
+				content: "";
+				width: 20px;
+				height: 4px;
+				background-color: $c-222;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+			}
+		}
+	}
+}
+
+.pop-up {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 50%;
+}
